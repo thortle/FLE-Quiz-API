@@ -1,8 +1,20 @@
 # FLE Grammar Quiz API
 
-FastAPI application for French grammar quizzes targeting FLE (French as a Foreign Language) learners.
+A FastAPI-based quiz application for French grammar learning, targeting FLE (Français Langue Étrangère) learners.
 
-**Source:** Questions based on *Grammaire Progressive du Français* (Intermédiaire)
+**ALAO Project - M2 IDL**
+
+## Features
+
+- **120+ grammar questions** across 6 CEFR levels (A1-C2)
+- **8 grammar categories**: verbe, pronom, adverbe, conjonction, adjectif, preposition, nom, article
+- **Fast API** with < 2.5 ms response times
+- **Interactive documentation** via Swagger UI
+- **Terminal quiz interface** for standalone practice
+
+**Source:** Questions based on *Grammaire Progressive du Français*
+
+---
 
 ## Quick Start
 
@@ -14,9 +26,11 @@ pip install -r requirements.txt
 python3 -m uvicorn main:api --host 127.0.0.1 --port 8000
 ```
 
-- **API:** http://127.0.0.1:8000
-- **Interactive Docs:** http://127.0.0.1:8000/docs (Swagger UI)
-- **Terminal Quiz:** `python3 quiz_terminal.py` (requires running server)
+| Interface | URL / Command |
+|-----------|---------------|
+| API | http://127.0.0.1:8000 |
+| Swagger UI | http://127.0.0.1:8000/docs |
+| Terminal Quiz | `python3 quiz_terminal.py` |
 
 ---
 
@@ -93,43 +107,105 @@ curl -X POST http://127.0.0.1:8000/create_question \
 ## Project Structure
 
 ```
-├── main.py              # FastAPI application
-├── quiz_terminal.py     # Interactive terminal interface
-├── questions.csv        # Question database (125+ questions)
-├── requests.sh          # Test scripts (16 tests)
-├── log.txt              # Development log
-└── README.md
+FLE-Quiz-API/
+├── main.py              # FastAPI application (5 endpoints)
+├── quiz_terminal.py     # Interactive terminal quiz
+├── questions.csv        # Question database (120+ questions)
+├── requests.sh          # Test suite (16 tests)
+├── requirements.txt     # Python dependencies
+├── log.txt              # Development journal
+├── PRESENTATION.md      # Oral presentation slides
+└── README.md            # This file
 ```
+
+---
 
 ## Database
 
-| Property | Value |
+**Format:** CSV with semicolon (`;`) delimiter
+
+| Field | Description |
+|-------|-------------|
+| question | Question text with blank (`___`) |
+| categorie | Grammar category |
+| niveau | CEFR level (A1-C2) |
+| reponse | Correct answer |
+| reponseA-D | Multiple choice options |
+| commentaire | Optional explanation |
+
+**Distribution by Level:**
+
+| Level | Count | Description |
+|-------|-------|-------------|
+| A1 | 15 | Beginner |
+| A2 | 20 | Elementary |
+| B1 | 25 | Intermediate |
+| B2 | 25 | Upper Intermediate |
+| C1 | 20 | Advanced |
+| C2 | 15 | Proficiency |
+
+**Distribution by Category:**
+
+| Category | Count |
 |----------|-------|
-| Format | CSV (semicolon delimiter) |
-| Questions | 125+ |
-| Levels | A1 (15), A2 (20), B1 (25), B2 (25), C1 (20), C2 (15) |
-| Categories | verbe, pronom, adverbe, conjonction, adjectif, preposition, nom, article |
+| verbe | 62 |
+| pronom | 15 |
+| adverbe | 13 |
+| conjonction | 10 |
+| adjectif | 8 |
+| preposition | 6 |
+| nom | 5 |
+| article | 1 |
 
 ---
 
 ## Performance
 
-| Endpoint | Avg Response |
-|----------|--------------|
-| GET / | 1.4 ms |
-| GET /verify | 1.4 ms |
-| GET /stats | 2.1 ms |
-| POST /generate_quiz | 1.7 ms |
+All endpoints respond in under 2.5 ms (target: < 5 ms).
 
-**Load test:** 50 concurrent requests completed in < 100 ms.
+| Endpoint | Avg Response Time |
+|----------|-------------------|
+| GET `/` | 1.4 ms |
+| GET `/verify` | 1.4 ms |
+| GET `/stats` | 2.1 ms |
+| POST `/generate_quiz` | 1.7 ms |
+
+**Load Testing:**
+
+| Concurrent Requests | Total Time |
+|---------------------|------------|
+| 50 | ~100 ms |
+| 200 | ~600 ms |
+| 500 | ~1.3 sec |
+
+---
 
 ## Security
 
 | Feature | Implementation |
 |---------|----------------|
-| CORS | Enabled (configure specific origins in production) |
-| Input Validation | Field length limits, level validation, answer matching |
-| Recommendations | Use HTTPS, add rate limiting (slowapi), restrict CORS |
+| CORS | Enabled via FastAPI middleware |
+| Input Validation | Pydantic field constraints (min/max length) |
+| Business Logic | Level validation, answer matching |
+
+**Production Recommendations:**
+- Restrict CORS to specific frontend domains
+- Add rate limiting with `slowapi`
+- Use HTTPS
+- Migrate to SQLite/PostgreSQL
+
+---
+
+## Testing
+
+Run the test suite:
+
+```bash
+chmod +x requests.sh
+./requests.sh
+```
+
+Tests cover all endpoints, error cases (400, 404, 422), and CORS.
 
 ---
 
@@ -137,22 +213,10 @@ curl -X POST http://127.0.0.1:8000/create_question \
 
 | Area | Planned Features |
 |------|------------------|
-| Database | SQLite/PostgreSQL migration, Redis caching, indexing |
-| Features | JWT authentication, user scores, DELETE/PUT endpoints, category filtering |
-| Interface | Web frontend (React/Vue), mobile app, offline mode |
-| DevOps | Docker, pytest, CI/CD (GitHub Actions), monitoring |
-
----
-
-## Testing
-
-Run all tests:
-```bash
-chmod +x requests.sh
-./requests.sh
-```
-
-Tests cover: all endpoints, error cases (400, 404, 422), edge cases, CORS.
+| Database | SQLite/PostgreSQL, Redis caching |
+| Features | JWT authentication, user scores, category filtering |
+| Interface | Web frontend (React/Vue), mobile app |
+| DevOps | Docker, pytest, CI/CD, monitoring |
 
 ---
 

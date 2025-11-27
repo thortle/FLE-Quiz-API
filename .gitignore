@@ -32,3 +32,4 @@ Thumbs.db
 # Jupyter
 .ipynb_checkpoints/
 projet_quiz_notebook.ipynb
+questions.xlsx
