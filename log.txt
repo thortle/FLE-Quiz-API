@@ -1,0 +1,149 @@
+JOURNAL DE DEVELOPPEMENT - API Quiz FLE
+Projet ALAO - M2
+================================================================================
+
+## DIFFICULTES RENCONTREES
+
+### Problemes de donnees (CSV)
+
+1. **Espaces blancs dans les categories**
+   Certaines categories contenaient des espaces en debut ou fin de chaine,
+   ce qui faussait les statistiques (ex: " verbe" vs "verbe").
+
+2. **Encodage des caracteres speciaux**
+   Les caracteres accentues francais (e, a, c) necessitaient un encodage
+   UTF-8 correct pour etre affiches et stockes correctement.
+
+### Problemes d'API
+
+3. **Absence de validation reponse/options**
+   Lors de la creation d'une question via /create_question, aucune verification
+   n'etait faite pour s'assurer que le champ "reponse" (la bonne reponse)
+   correspondait exactement a l'une des quatre options proposees (reponseA,
+   reponseB, reponseC, reponseD). Un utilisateur pouvait donc soumettre
+   reponse="paris" alors que les options etaient "Londres", "Berlin", "Madrid",
+   "Rome", creant des donnees incoherentes dans la base.
+
+4. **Sensibilite a la casse du niveau**
+   Le parametre niveau etait sensible a la casse ("a" != "A"), causant des
+   erreurs 400 pour des requetes valides.
+
+### Problemes de test
+
+5. **Script requests.sh avec retours a la ligne Windows**
+    Le fichier avait des caracteres \r\n (CRLF) au lieu de \n (LF), causant
+    l'erreur "bad interpreter" sur macOS/Linux.
+
+6. **Serveur non demarre lors des tests**
+    Les tests echouaient silencieusement quand le serveur n'etait pas lance,
+    sans message d'erreur explicite.
+
+### Problemes de securite
+
+7. **Donnees non sanitisees**
+    Les entrees utilisateur n'etaient pas validees, permettant potentiellement
+    des injections ou des donnees malformees.
+
+--------------------------------------------------------------------------------
+
+## SOLUTIONS APPORTEES
+
+### Solutions donnees (CSV)
+
+1. **Normalisation des categories**
+   Application de strip() sur les valeurs pour supprimer les espaces parasites.
+
+2. **Encodage UTF-8**
+   Specification explicite de l'encodage dans les operations de lecture/ecriture.
+
+### Solutions API
+
+3. **Validation de la reponse**
+   Ajout d'une verification que request.reponse correspond exactement a l'une
+   des options fournies (reponseA, reponseB, reponseC, reponseD). Si la
+   reponse ne correspond a aucune option, le endpoint /create_question renvoie
+   une erreur 400 avec le message: "La reponse doit correspondre a l'une des
+   options (reponseA, reponseB, reponseC, reponseD)."
+
+4. **Normalisation de la casse**
+   Conversion automatique en majuscules avec .upper() avant validation.
+
+### Solutions test
+
+5. **Conversion des fins de ligne**
+    Utilisation de sed -i '' 's/\r$//' pour convertir CRLF en LF.
+
+6. **Verification du serveur**
+    Ajout de tests de connectivite avant l'execution des tests.
+
+### Solutions securite
+
+7. **Validation Pydantic**
+    Utilisation des modeles Pydantic pour valider automatiquement
+    le type et le format des donnees entrantes.
+
+--------------------------------------------------------------------------------
+
+## AMELIORATIONS IMPLEMENTEES
+
+1. **Documentation API complete**
+   - Metadata FastAPI (titre, description, version, contact, licence)
+   - Docstrings pour tous les endpoints
+   - Exemples Pydantic pour les modeles de requete
+
+2. **Gestion des erreurs**
+   - HTTPException avec messages clairs en francais
+   - Validation des entrees avec contraintes de longueur (min/max)
+   - Codes HTTP appropries (400, 404, 405, 422)
+
+3. **Securite**
+   - CORS middleware pour les applications frontend
+   - Validation des longueurs des champs (protection contre les abus)
+
+4. **Interface terminal**
+   - quiz_terminal.py: interface interactive pour jouer au quiz
+   - Menu de selection du niveau, score final
+
+5. **Tests**
+   - requests.sh avec 16 tests automatises
+   - Tests de performance (< 5ms par requete)
+   - Tests de charge (50 requetes simultanees en < 100ms)
+
+--------------------------------------------------------------------------------
+
+## CHANGELOG
+
+**Phase 1 - Base de donnees**
+- Validation du CSV: 120 questions, 6 niveaux, 8 categories
+- Correction du delimiteur (;)
+
+**Phase 2 - API Core**
+- GET / : informations API
+- GET /verify : health check + nombre de questions
+- GET /stats : statistiques par niveau et categorie
+- POST /generate_quiz : genere 10 questions par niveau (A/B/C)
+- POST /create_question : ajoute une question au CSV
+
+**Phase 3 - Documentation**
+- Metadata FastAPI complete
+- Docstrings et descriptions Pydantic
+- README.md avec documentation complete
+
+**Phase 4 - Tests**
+- requests.sh: 16 tests (endpoints + erreurs)
+- Tests edge cases (JSON malformed, champs manquants, etc.)
+- Verification error handling (400, 404, 405, 422)
+
+**Phase 5 - Bonus**
+- Performance: tous endpoints < 5ms
+- CORS middleware
+- Validation longueur des champs
+- Documentation securite et ameliorations futures
+
+**Phase 6 - Final**
+- Journal de developpement (log.txt)
+- Verification finale
+
+================================================================================
+FIN DU JOURNAL
+================================================================================
