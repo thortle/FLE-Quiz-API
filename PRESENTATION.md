@@ -4,19 +4,19 @@ ALAO Project - M2 IDL
 
 ---
 
-## SLIDE 1: Project Overview
+## SLIDE 1: Project Overview (Intro)
 
-**Objective:** Build a FastAPI-based quiz application for French grammar learning
+**Objective:** Build a FastAPI-based quiz application for French grammar learning (FLE).
 
 **Deliverables:**
-- Question database (CSV) - 120+ questions
-- FastAPI application with documentation
-- Test suite
+- Question database (CSV) – 120+ questions
+- FastAPI application with improved documentation
+- Request test suite
 - Development log
 
 **Tech Stack:**
 - Python 3 + FastAPI
-- Pandas for data handling
+- Pandas for CSV handling
 - Pydantic for validation
 - Uvicorn ASGI server
 
@@ -26,7 +26,7 @@ Projet_ALAO_Quiz/
 ├── main.py           # FastAPI application
 ├── quiz_terminal.py  # Interactive terminal UI
 ├── questions.csv     # Question database
-├── requests.sh       # Test scripts (16 tests)
+├── requests.sh       # Test scripts (16+ tests)
 ├── requirements.txt  # Dependencies
 ├── log.txt           # Development log
 └── README.md         # Documentation
@@ -34,63 +34,56 @@ Projet_ALAO_Quiz/
 
 ---
 
-## SLIDE 2: Database
+## SLIDE 2: Database (Questions CSV)
 
-**Source:** *Grammaire Progressive du Francais* 
+**Pedagogical Source:**
+- Based on *Grammaire Progressive du Francais* (add edition/author details).
+- Exercises adapted into multiple-choice questions with one correct answer.
 
-**Format:** CSV with semicolon (;) delimiter
-
-**Fields:**
-| Field | Description |
-|-------|-------------|
-| question | The question text with blank (___) |
-| categorie | Grammar category |
-| niveau | CEFR level (A1-C2) |
-| reponse | Correct answer |
-| reponseA-D | Multiple choice options |
-| commentaire | Optional explanation |
+**Format & Fields (CSV, `;`-separated):**
+| Field      | Description                                   |
+|-----------|-----------------------------------------------|
+| question  | Question text with blank (`___`)              |
+| categorie | Grammar category                              |
+| niveau    | CEFR level (A1–C2)                            |
+| reponse   | Correct answer                                |
+| reponseA-D| Multiple-choice options                       |
+| commentaire | Optional explanation / feedback            |
 
 **Total Questions:** 120+
 
 **Distribution by Level:**
-| Level | Count | Description |
-|-------|-------|-------------|
-| A1 | 15 | Beginner |
-| A2 | 20 | Elementary |
-| B1 | 25 | Intermediate |
-| B2 | 25 | Upper Intermediate |
-| C1 | 20 | Advanced |
-| C2 | 15 | Proficiency |
+| Level | Count | Description        |
+|-------|-------|--------------------|
+| A1    | 15    | Beginner           |
+| A2    | 20    | Elementary         |
+| B1    | 25    | Intermediate       |
+| B2    | 25    | Upper Intermediate |
+| C1    | 20    | Advanced           |
+| C2    | 15    | Proficiency        |
 
 **Distribution by Category:**
-| Category | Count |
-|----------|-------|
-| verbe | 62 |
-| pronom | 15 |
-| adverbe | 13 |
-| conjonction | 10 |
-| adjectif | 8 |
-| preposition | 6 |
-| nom | 5 |
-| article | 1 |
+| Category   | Count |
+|------------|-------|
+| verbe      | 62    |
+| pronom     | 15    |
+| adverbe    | 13    |
+| conjonction| 10    |
+| adjectif   | 8     |
+| preposition| 6     |
+| nom        | 5     |
+| article    | 1     |
 
 ---
 
-## SLIDE 3: API Documentation
+## SLIDE 3: Improving the API Documentation
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/` | API info and available endpoints |
-| GET | `/verify` | Health check + question count |
-| GET | `/stats` | Statistics by level and category |
-| POST | `/generate_quiz` | Generate 10 random questions |
-| POST | `/create_question` | Add a new question |
+**Goal:** Make the API self-explanatory for teachers and developers using only `/docs` and `README.md`.
 
-**Interactive Documentation:** Swagger UI at http://127.0.0.1:8000/docs
+### 1. FastAPI Metadata & Global Description
 
-**Documentation Improvements Made:**
-
-1. **FastAPI Metadata:**
+- Principle: **Immediate context** — users should understand the API in one glance.
+- Example:
 ```python
 api = FastAPI(
     title="API Quiz FLE - Grammaire Francaise",
@@ -99,98 +92,122 @@ api = FastAPI(
 )
 ```
 
-2. **Endpoint Docstrings (French):**
+### 2. Endpoint-Level Documentation (Docstrings & Tags)
+
+- Principle: Each endpoint answers 3 questions:
+  - What does it do?
+  - What does it expect?
+  - What does it return / when does it fail?
+- Example:
 ```python
 @api.post("/generate_quiz")
 def generate_quiz(request: QuizRequest):
     """Genere un quiz de 10 questions aleatoires selon le niveau."""
 ```
+- Visible effect in Swagger:
+  - Clear French descriptions per route
+  - Grouping by tags (Info, Quiz, etc.) for easier navigation
 
-3. **Pydantic Field Validation:**
+### 3. Pydantic Models with Constraints & Examples
+
+- Principle: Documentation and validation in one place.
+- Example field constraints:
 ```python
 question: str = Field(min_length=5, max_length=500)
 categorie: str = Field(min_length=2, max_length=50)
 niveau: str = Field(min_length=2, max_length=2)  # A1, B2, etc.
 ```
+- Benefits:
+  - Auto-generated schemas in `/docs`
+  - Automatic 422 errors with clear messages when data is invalid
 
-4. **Clear Error Messages:**
+### 4. Clear, User-Oriented Error Messages
+
+- Principle: Explain what went wrong and how to fix it.
+- Example:
 ```python
-HTTPException(status_code=400, 
-    detail="Niveau invalide: 'X'. Utilisez A, B, ou C.")
+HTTPException(
+    status_code=400,
+    detail="Niveau invalide: 'X'. Utilisez A, B, ou C."
+)
 ```
+- Talking point: Difference between **technical errors** (422 validation) and **business rules** (400 custom messages).
 
 ---
 
-## SLIDE 4: Performance Evaluation
+## SLIDE 4: API Performance Evaluation
 
-**How We Tested:**
+**Objective:** Verify that the API is fast and behaves correctly under load.
 
-1. **Individual Response Times** - Using `curl` with timing:
+### 1. Techniques & Tools Used
+
+- **Single-request timing:** `curl` with timing options
 ```bash
-curl -w "%{time_total}s" http://127.0.0.1:8000/stats
+curl -w "%{time_total}s\n" http://127.0.0.1:8000/stats
 ```
-
-2. **Concurrent Load Testing** - Parallel requests in bash:
+- **Concurrent load testing (shell parallelism):**
 ```bash
 time (for i in {1..500}; do 
     curl -s -o /dev/null http://127.0.0.1:8000/stats & 
 done; wait)
 ```
 
-**Results - Individual Endpoints:**
+### 2. Results – Individual Endpoints
 
 | Endpoint | Avg Response Time |
 |----------|-------------------|
-| GET / | 1.4 ms |
-| GET /verify | 1.4 ms |
-| GET /stats | 2.1 ms |
-| POST /generate_quiz | 1.7 ms |
+| GET `/`  | ~1.4 ms           |
+| GET `/verify` | ~1.4 ms      |
+| GET `/stats` | ~2.1 ms       |
+| POST `/generate_quiz` | ~1.7 ms |
 
-**Results - Concurrent Load:**
+### 3. Results – Concurrent Requests
 
 | Parallel Requests | Total Time | Avg per Request |
 |-------------------|------------|-----------------|
-| 50 | ~100 ms | ~2 ms |
-| 200 | 600 ms | ~3 ms |
-| 500 | 1.3 sec | ~2.6 ms |
+| 50                | ~100 ms    | ~2 ms           |
+| 200               | ~600 ms    | ~3 ms           |
+| 500               | ~1.3 s     | ~2.6 ms         |
 
-**Observations:**
-- All endpoints respond in < 2.5 ms (target was < 5 ms)
-- API scales linearly: 10x more requests = ~10x more time
-- No request failures under load (0% error rate)
-- Response time stays consistent even under stress (~2-3 ms)
-- Limiting factor: shell process spawning, not the API itself
+**Key observations (talking points):**
+- All endpoints respond in < 2.5 ms (target: < 5 ms).
+- API scales approximately linearly: more requests → proportionally more time.
+- No request failures under load (0% error rate).
+- Limiting factor appears to be shell process spawning, not FastAPI itself.
 
-**Sync vs Async:**
-- Current implementation uses synchronous endpoints
-- FastAPI runs sync functions in a thread pool automatically
-- Sufficient for our use case: small CSV dataset, simple I/O
-- Async would benefit: database connections, external APIs, 1000+ concurrent users
+### 4. Sync vs Async Discussion
+
+- Current implementation: **synchronous endpoints**, executed in FastAPI’s thread pool.
+- For this project:
+  - Small CSV file, no external services → sync is sufficient.
+- For future / higher load:
+  - Async endpoints + async database drivers would help for:
+    - Real databases (PostgreSQL, Redis)
+    - External APIs
+    - Thousands of concurrent users
 
 ---
 
-## SLIDE 5: Security
+## SLIDE 5: Security Measures
 
-**1. CORS (Cross-Origin Resource Sharing) Middleware**
+**Goal:** Make the API reasonably safe to expose to a frontend and robust against bad inputs.
 
-*What is it?* Browser security that blocks web pages from making requests to different domains.
+### 1. CORS Configuration
 
-*Problem:* A frontend app at `http://myquiz.com` cannot call our API at `http://127.0.0.1:8000` - the browser blocks it.
-
-*Solution:* We added CORS middleware to allow cross-origin requests:
+- Problem: Browsers block cross-origin requests from a separate frontend.
+- Solution: Add CORS middleware in FastAPI.
 ```python
 from fastapi.middleware.cors import CORSMiddleware
 
 api.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],      # Which domains can access (all for dev)
-    allow_methods=["GET", "POST"],  # Allowed HTTP methods
+    allow_origins=["*"],      # all origins for now (dev)
+    allow_methods=["GET", "POST"],
     allow_credentials=True,
     allow_headers=["*"],
 )
 ```
-
-*How we tested it:*
+- Verification:
 ```bash
 curl -I -X OPTIONS http://127.0.0.1:8000/stats \
   -H "Origin: http://example.com" \
@@ -198,10 +215,9 @@ curl -I -X OPTIONS http://127.0.0.1:8000/stats \
 # Response includes: Access-Control-Allow-Origin: *
 ```
 
-**2. Input Validation (Pydantic)**
+### 2. Input Validation with Pydantic
 
-*What it prevents:* Malformed data, injection attacks, database overflow
-
+- Purpose: Block malformed or suspicious input before it reaches our logic.
 ```python
 class QuestionRequest(BaseModel):
     question: str = Field(min_length=5, max_length=500)
@@ -209,61 +225,59 @@ class QuestionRequest(BaseModel):
     niveau: str = Field(min_length=2, max_length=2)  # Forces A1, B2, etc.
     reponse: str = Field(min_length=1, max_length=200)
 ```
+- Effect: Too-short or missing fields → automatic 422 error with details.
 
-*Effect:* Sending `{"question": "Hi"}` (too short) returns 422 error automatically.
+### 3. Business Logic Validation
 
-**3. Business Logic Validation**
-
-*What it prevents:* Invalid data that passes format checks
-
+- Purpose: Ensure data is pedagogically valid, not just well-formed.
 ```python
 if request.niveau.upper() not in ["A1", "A2", "B1", "B2", "C1", "C2"]:
     raise HTTPException(status_code=400, detail="Niveau invalide...")
 
-if request.reponse not in [request.reponseA, request.reponseB, ...]:
-    raise HTTPException(status_code=400, detail="La reponse doit correspondre...")
+if request.reponse not in [request.reponseA, request.reponseB,
+                           request.reponseC, request.reponseD]:
+    raise HTTPException(status_code=400,
+                        detail="La reponse doit correspondre a une des propositions.")
 ```
 
-**Recommendations for Production:**
+### 4. Production Recommendations (Awareness)
 
-| Current Risk | Recommendation |
-|--------------|----------------|
-| `allow_origins=["*"]` | Restrict to specific frontend domains |
-| No rate limiting | Add slowapi: `@limiter.limit("100/minute")` |
-| No authentication | Add JWT tokens for user tracking |
-| HTTP only | Use HTTPS in production |
-| CSV file storage | Migrate to SQLite/PostgreSQL database |
-| No frontend | Build web frontend (React/Vue) |
+| Current Situation         | Recommended for Production           |
+|---------------------------|--------------------------------------|
+| `allow_origins=["*"]`    | Restrict to specific frontend hosts  |
+| No rate limiting          | Add `slowapi` (e.g. `100/min` per IP)|
+| No authentication         | Add JWT-based auth / API keys        |
+| HTTP only                 | Use HTTPS with reverse proxy         |
+| CSV file storage          | Move to SQLite/PostgreSQL            |
 
 ---
 
-## SLIDE 6: Live Demo
+## SLIDE 6: Live Demo (Swagger UI + CSV)
 
 **Demo 1: Add a Question via Swagger UI**
 1. Open http://127.0.0.1:8000/docs
-2. Click POST /create_question
+2. Click POST `/create_question`
 3. Click "Try it out"
-4. Fill in question data
-5. Execute and verify response
+4. Fill in realistic question data (niveau, categorie, options, commentaire)
+5. Execute and show the JSON response confirming success
 
-**Demo 2: Terminal Quiz**
-```bash
-python3 quiz_terminal.py
-```
-1. Select level (A/B/C)
-2. Answer 10 questions
-3. See final score
+**Demo 2: Verify in the CSV File**
+- Open `questions.csv` (editor / spreadsheet / quick Python script).
+- Show that the new line has been appended with the same fields.
+- Emphasize that new questions immediately become available for future quizzes and stats.
 
 ---
 
-## SLIDE 7: AI Usage
+## SLIDE 7: Terminal Quiz Demo
 
-**Tool Used:** Claude
-
-**How We Used It:**
-
-1. **Debugging** - Identifying issues in code logic and suggesting fixes
-2. **Documentation Organizer** - Structuring README
-3. **Identifying Improvements** - Suggesting security measures, performance optimizations, and best practices
+- Command:
+```bash
+python3 quiz_terminal.py
+```
+- Flow:
+1. Select level (A/B/C)
+2. Answer 10 questions
+3. See final score
+- Message: same database and logic reused in a different interface.
 
 ---
