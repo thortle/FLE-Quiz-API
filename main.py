@@ -9,13 +9,25 @@ import pandas as pd
 import random
 
 api = FastAPI(
-    title="API Quiz FLE - Grammaire Francaise",
-    description="API pour un quiz de grammaire francaise destine aux apprenants de FLE (Francais Langue Etrangere). "
-                "Permet de generer des quiz par niveau (A1-C2), consulter des statistiques, et ajouter de nouvelles questions.",
+    title="API Quiz FLE - Grammaire Française",
+    description="""API pour un quiz de grammaire française destiné aux apprenants de FLE (Français Langue Étrangère).
+
+**Source pédagogique :** Questions basées sur la série *Grammaire Progressive du Français* (Éditions CLE International), ouvrage de référence dans l'enseignement du FLE.
+
+**Volumes de la série :**
+- Débutant (A1–A2)
+- Intermédiaire (B1–B2)
+- Avancé (B2–C1)
+- Perfectionnement (C1–C2)
+
+**Fonctionnalités :**
+- Générer des quiz par niveau (A, B, C)
+- Consulter les statistiques de la base des données
+- Ajouter de nouvelles questions
+""",
     version="1.0.0",
     contact={
-        "name": "Projet ALAO - M2",
-        "email": "contact@example.com"
+        "name": "Projet ALAO - M2 IDL"
     },
     license_info={
         "name": "MIT"
@@ -33,14 +45,14 @@ api.add_middleware(
 
 @api.get('/')
 def get_index():
-    """Retourne les informations generales sur l'API et la liste des endpoints disponibles."""
+    """Retourne les informations générales sur l'API et la liste des endpoints disponibles."""
     return {
-        "nom": "API Quiz FLE - Grammaire Francaise",
+        "nom": "API Quiz FLE - Grammaire Française",
         "version": "1.0.0",
         "endpoints": {
             "/": "Informations sur l'API",
-            "/verify": "Verifier le fonctionnement",
-            "/generate_quiz": "Generer un quiz",
+            "/verify": "Vérifier le fonctionnement",
+            "/generate_quiz": "Générer un quiz",
             "/create_question": "Ajouter une question",
             "/stats": "Statistiques de la base",
             "/docs": "Documentation interactive"
@@ -49,7 +61,7 @@ def get_index():
 
 @api.get("/verify")
 def verify():
-    """Verifie que l'API fonctionne correctement et retourne le nombre de questions dans la base."""
+    """Vérifie que l'API fonctionne correctement et retourne le nombre de questions dans la base."""
     return {
         "status": "OK",
         "message": "L'API fonctionne correctement",
@@ -63,7 +75,7 @@ data = load_data()
 
 class QuizRequest(BaseModel):
     niveau: str = Field(
-        description="Niveau du quiz: A (debutant), B (intermediaire), ou C (avance)",
+        description="Niveau du quiz: A (débutant), B (intermédiaire), ou C (avancé)",
         examples=["A", "B", "C"]
     )
 
@@ -75,17 +87,17 @@ class QuizRequest(BaseModel):
 
 class QuizResponse(BaseModel):
     quiz: List[dict] = Field(description="Liste des questions du quiz")
-    niveau: str = Field(description="Niveau demande")
-    nombre_questions: int = Field(description="Nombre de questions retournees")
+    niveau: str = Field(description="Niveau demandé")
+    nombre_questions: int = Field(description="Nombre de questions retournées")
 
 @api.post("/generate_quiz", response_model=QuizResponse)
 def generate_quiz(request: QuizRequest):
     """
-    Genere un quiz de 10 questions aleatoires selon le niveau demande.
+    Génère un quiz de 10 questions aléatoires selon le niveau demandé.
     
-    - **niveau A**: Questions de niveau A1 et A2 (debutant)
-    - **niveau B**: Questions de niveau B1 et B2 (intermediaire)
-    - **niveau C**: Questions de niveau C1 et C2 (avance)
+    - **niveau A**: Questions de niveau A1 et A2 (débutant)
+    - **niveau B**: Questions de niveau B1 et B2 (intermédiaire)
+    - **niveau C**: Questions de niveau C1 et C2 (avancé)
     """
     # Map A/B/C to actual levels
     level_map = {
@@ -118,7 +130,7 @@ def generate_quiz(request: QuizRequest):
 
 @api.get("/stats")
 def get_stats():
-    """Retourne les statistiques de la base de questions: total, repartition par niveau et par categorie."""
+    """Retourne les statistiques de la base de questions: total, répartition par niveau et par catégorie."""
     df = pd.DataFrame(data)
     return {
         "total_questions": len(data),
@@ -127,10 +139,10 @@ def get_stats():
     }
 
 class QuestionRequest(BaseModel):
-    question: str = Field(min_length=5, max_length=500, description="La question a poser")
-    categorie: str = Field(min_length=2, max_length=50, description="Categorie grammaticale (verbe, adjectif, pronom, etc.)")
+    question: str = Field(min_length=5, max_length=500, description="La question à poser")
+    categorie: str = Field(min_length=2, max_length=50, description="Catégorie grammaticale (verbe, adjectif, pronom, etc.)")
     niveau: str = Field(min_length=2, max_length=2, description="Niveau CECRL (A1, A2, B1, B2, C1, C2)")
-    reponse: str = Field(min_length=1, max_length=200, description="La bonne reponse (doit correspondre a une des options)")
+    reponse: str = Field(min_length=1, max_length=200, description="La bonne réponse (doit correspondre à une des options)")
     reponseA: str = Field(min_length=1, max_length=200, description="Option A")
     reponseB: str = Field(min_length=1, max_length=200, description="Option B")
     reponseC: Optional[str] = Field(default=None, max_length=200, description="Option C (optionnel)")
@@ -140,15 +152,15 @@ class QuestionRequest(BaseModel):
     model_config = {
         "json_schema_extra": {
             "examples": [{
-                "question": "Elle ___ au marche hier.",
+                "question": "Elle ___ au marché hier.",
                 "categorie": "verbe",
                 "niveau": "A2",
-                "reponse": "est allee",
-                "reponseA": "a alle",
-                "reponseB": "est allee",
-                "reponseC": "est alle",
-                "reponseD": "a allee",
-                "commentaire": "Passe compose avec etre"
+                "reponse": "est allée",
+                "reponseA": "a allé",
+                "reponseB": "est allée",
+                "reponseC": "est allé",
+                "reponseD": "a allée",
+                "commentaire": "Passé composé avec être"
             }]
         }
     }
@@ -156,10 +168,10 @@ class QuestionRequest(BaseModel):
 @api.post("/create_question")
 def create_question(request: QuestionRequest):
     """
-    Ajoute une nouvelle question a la base de donnees.
+    Ajoute une nouvelle question à la base de données.
     
-    La question doit contenir au minimum: question, categorie, niveau, reponse, reponseA, reponseB.
-    Les champs reponseC, reponseD et commentaire sont optionnels.
+    La question doit contenir au minimum: question, catégorie, niveau, réponse, réponseA, réponseB.
+    Les champs réponseC, réponseD et commentaire sont optionnels.
     """
     # Validate level
     valid_levels = ["A1", "A2", "B1", "B2", "C1", "C2"]
@@ -196,7 +208,7 @@ def create_question(request: QuestionRequest):
 
     return {
         "status": "OK",
-        "message": "Question ajoutee avec succes",
+        "message": "Question ajoutée avec succès",
         "question": new_question,
         "total_questions": len(data)
     }

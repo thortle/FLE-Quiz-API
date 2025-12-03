@@ -12,7 +12,20 @@ A FastAPI-based quiz application for French grammar learning, targeting FLE (Fra
 - **Interactive documentation** via Swagger UI
 - **Terminal quiz interface** for standalone practice
 
-**Source:** Questions based on *Grammaire Progressive du Français*
+**Source:** Questions based on *Grammaire Progressive du Français* (Éditions CLE International)
+
+### About the Source Material
+
+The *Grammaire Progressive du Français* series is a reference work in FLE teaching, published by **Éditions CLE International**, a publisher specializing in French as a Foreign Language resources.
+
+The series consists of 4 volumes:
+
+| Volume | CEFR Levels |
+|--------|-------------|
+| Débutant | A1–A2 |
+| Intermédiaire | B1–B2 |
+| Avancé | B2–C1 |
+| Perfectionnement | C1–C2 |
 
 ---
 
@@ -73,14 +86,14 @@ curl -X POST http://127.0.0.1:8000/generate_quiz \
 curl -X POST http://127.0.0.1:8000/create_question \
   -H "Content-Type: application/json" \
   -d '{
-    "question": "Elle ___ au marche hier.",
+    "question": "Elle ___ au marché hier.",
     "categorie": "verbe",
     "niveau": "A2",
-    "reponse": "est allee",
-    "reponseA": "a alle",
-    "reponseB": "est allee",
-    "reponseC": "est alle",
-    "reponseD": "a allee"
+    "reponse": "est allée",
+    "reponseA": "a allé",
+    "reponseB": "est allée",
+    "reponseC": "est allé",
+    "reponseD": "a allée"
   }'
 ```
 

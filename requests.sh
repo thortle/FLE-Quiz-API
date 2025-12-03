@@ -42,7 +42,7 @@ curl -s "$BASE_URL/stats" | python3 -m json.tool
 echo ""
 
 # -----------------------------------------------------------------------------
-# TEST 4: POST /generate_quiz - Level A (Debutant)
+# TEST 4: POST /generate_quiz - Level A (Débutant)
 # -----------------------------------------------------------------------------
 echo -e "${BLUE}[TEST 4] POST /generate_quiz - Level A${NC}"
 curl -s -X POST "$BASE_URL/generate_quiz" \
@@ -51,7 +51,7 @@ curl -s -X POST "$BASE_URL/generate_quiz" \
 echo ""
 
 # -----------------------------------------------------------------------------
-# TEST 5: POST /generate_quiz - Level B (Intermediaire)
+# TEST 5: POST /generate_quiz - Level B (Intermédiaire)
 # -----------------------------------------------------------------------------
 echo -e "${BLUE}[TEST 5] POST /generate_quiz - Level B${NC}"
 curl -s -X POST "$BASE_URL/generate_quiz" \
@@ -60,7 +60,7 @@ curl -s -X POST "$BASE_URL/generate_quiz" \
 echo ""
 
 # -----------------------------------------------------------------------------
-# TEST 6: POST /generate_quiz - Level C (Avance)
+# TEST 6: POST /generate_quiz - Level C (Avancé)
 # -----------------------------------------------------------------------------
 echo -e "${BLUE}[TEST 6] POST /generate_quiz - Level C${NC}"
 curl -s -X POST "$BASE_URL/generate_quiz" \
@@ -102,15 +102,15 @@ echo -e "${BLUE}[TEST 10] POST /create_question - Valid question with all fields
 curl -s -X POST "$BASE_URL/create_question" \
   -H "Content-Type: application/json" \
   -d '{
-    "question": "Elle ___ au marche hier.",
+    "question": "Elle ___ au marché hier.",
     "categorie": "verbe",
     "niveau": "A2",
-    "reponse": "est allee",
-    "reponseA": "a alle",
-    "reponseB": "est allee",
-    "reponseC": "est alle",
-    "reponseD": "a allee",
-    "commentaire": "Passe compose avec etre pour les verbes de mouvement"
+    "reponse": "est allée",
+    "reponseA": "a allé",
+    "reponseB": "est allée",
+    "reponseC": "est allé",
+    "reponseD": "a allée",
+    "commentaire": "Passé composé avec être pour les verbes de mouvement"
   }' | python3 -m json.tool
 echo ""
 
