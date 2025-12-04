@@ -2,8 +2,6 @@
 
 A FastAPI-based quiz application for French grammar learning, targeting FLE (Français Langue Étrangère) learners.
 
-**ALAO Project - M2 IDL**
-
 ## Features
 
 - **120 grammar questions** across 6 CEFR levels (A1-C2)
