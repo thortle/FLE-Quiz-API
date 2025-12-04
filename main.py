@@ -37,7 +37,7 @@ api = FastAPI(
 # CORS configuration - allows frontend applications to access the API
 api.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with specific domains
+    allow_origins=["*"],  # In production, should replace with specific domains
     allow_credentials=True,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
@@ -122,7 +122,7 @@ def generate_quiz(request: QuizRequest):
             detail=f"Aucune question trouvee pour le niveau {request.niveau}."
         )
     
-    # Get 10 questions (or less if not enough available)
+    # Get 10 questions
     count = min(10, len(filtered_data))
     quiz = random.sample(filtered_data, count)
     

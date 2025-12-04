@@ -34,13 +34,9 @@ Projet ALAO - M2
     Le fichier avait des caracteres \r\n (CRLF) au lieu de \n (LF), causant
     l'erreur "bad interpreter" sur macOS/Linux.
 
-6. **Serveur non demarre lors des tests**
-    Les tests echouaient silencieusement quand le serveur n'etait pas lance,
-    sans message d'erreur explicite.
-
 ### Problemes de securite
 
-7. **Donnees non sanitisees**
+6. **Donnees non sanitisees**
     Les entrees utilisateur n'etaient pas validees, permettant potentiellement
     des injections ou des donnees malformees.
 
@@ -73,9 +69,6 @@ Projet ALAO - M2
 5. **Conversion des fins de ligne**
     Utilisation de sed -i '' 's/\r$//' pour convertir CRLF en LF.
 
-6. **Verification du serveur**
-    Ajout de tests de connectivite avant l'execution des tests.
-
 ### Solutions securite
 
 7. **Validation Pydantic**
@@ -94,7 +87,7 @@ Projet ALAO - M2
 2. **Gestion des erreurs**
    - HTTPException avec messages clairs en francais
    - Validation des entrees avec contraintes de longueur (min/max)
-   - Codes HTTP appropries (400, 404, 405, 422)
+   - Codes HTTP appropries
 
 3. **Securite**
    - CORS middleware pour les applications frontend
@@ -105,10 +98,9 @@ Projet ALAO - M2
    - Menu de selection du niveau, score final
 
 5. **Tests**
-   - requests.sh avec 16 tests automatises
+   - requests.sh 
    - Tests de performance (< 5ms par requete)
-   - Tests de charge (50 requetes simultanees en < 100ms)
-
+   - Tests de charge
 --------------------------------------------------------------------------------
 
 ## CHANGELOG
@@ -130,11 +122,11 @@ Projet ALAO - M2
 - README.md avec documentation complete
 
 **Phase 4 - Tests**
-- requests.sh: 16 tests (endpoints + erreurs)
+- requests.sh
 - Tests edge cases (JSON malformed, champs manquants, etc.)
-- Verification error handling (400, 404, 405, 422)
+- Verification error handling
 
-**Phase 5 - Bonus**
+**Phase 5**
 - Performance: tous endpoints < 5ms
 - CORS middleware
 - Validation longueur des champs
@@ -143,7 +135,3 @@ Projet ALAO - M2
 **Phase 6 - Final**
 - Journal de developpement (log.txt)
 - Verification finale
-
-================================================================================
-FIN DU JOURNAL
-================================================================================

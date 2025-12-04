@@ -6,7 +6,7 @@ A FastAPI-based quiz application for French grammar learning, targeting FLE (Fra
 
 ## Features
 
-- **120+ grammar questions** across 6 CEFR levels (A1-C2)
+- **120 grammar questions** across 6 CEFR levels (A1-C2)
 - **8 grammar categories**: verbe, pronom, adverbe, conjonction, adjectif, preposition, nom, article
 - **Fast API** with < 2.5 ms response times
 - **Interactive documentation** via Swagger UI
@@ -121,13 +121,12 @@ curl -X POST http://127.0.0.1:8000/create_question \
 
 ```
 FLE-Quiz-API/
-├── main.py              # FastAPI application (5 endpoints)
+├── main.py              # FastAPI application
 ├── quiz_terminal.py     # Interactive terminal quiz
-├── questions.csv        # Question database (120+ questions)
-├── requests.sh          # Test suite (16 tests)
+├── questions.csv        # Question database
+├── requests.sh          # Test suite
 ├── requirements.txt     # Python dependencies
 ├── log.txt              # Development journal
-├── PRESENTATION.md      # Oral presentation slides
 └── README.md            # This file
 ```
 

@@ -80,7 +80,6 @@ def verify_answer(user_choice, valid_options, correct_answer, question_data):
     print()
     if is_correct:
         print(">>> CORRECT! <<<")
-        return True
     else:
         print(">>> WRONG <<<")
         # Find which letter has the correct answer
@@ -93,7 +92,13 @@ def verify_answer(user_choice, valid_options, correct_answer, question_data):
             print(f"    Correct answer: {correct_letter}) {correct_answer}")
         else:
             print(f"    Correct answer: {correct_answer}")
-        return False
+    
+    # Display explanation if available
+    commentaire = question_data.get('commentaire')
+    if commentaire and str(commentaire).strip():
+        print(f"    Explication: {commentaire}")
+    
+    return is_correct
 
 
 def run_quiz(niveau):
